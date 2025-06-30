@@ -15,4 +15,5 @@ Sunset District in San Francisco.
    ```
 
 When deployed to Vercel, the `/weather` endpoint will return the current
-conditions in JSON format.
+conditions in JSON format. The root `index.html` page fetches this endpoint and
+displays the JSON response in the browser.
