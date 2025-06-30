@@ -10,7 +10,8 @@
 </head>
 <body>
 <h1>Current Weather in San Francisco</h1>
-<div id="weather">Loading...</div>
+  <div id="weather">Loading...</div>
+  <div id="sunshine">Loading sunshine data...</div>
 <script>
 async function fetchWeather() {
   const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.7749&longitude=-122.4194&current_weather=true';
@@ -28,6 +29,29 @@ async function fetchWeather() {
   }
 }
 fetchWeather();
+
+const SUNSHINE_THRESHOLD = 120;
+
+function countSunshineHours(radiationArray, threshold) {
+  return radiationArray.filter(value => value >= threshold).length;
+}
+
+async function fetchSunshine() {
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.7749&longitude=-122.4194&hourly=shortwave_radiation&forecast_days=1&timezone=auto';
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    const radiation = data.hourly.shortwave_radiation;
+    const sunshineHours = countSunshineHours(radiation, SUNSHINE_THRESHOLD);
+    document.getElementById('sunshine').textContent =
+      `Estimated Sunshine Hours Today: ${sunshineHours}`;
+  } catch (err) {
+    document.getElementById('sunshine').textContent = 'Error fetching sunshine data.';
+    console.error(err);
+  }
+}
+fetchSunshine();
 </script>
 </body>
 </html>
