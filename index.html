@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>San Francisco Weather</title>
+<style>
+ body { font-family: Arial, sans-serif; margin: 2em; }
+ #weather { font-size: 1.5em; }
+</style>
+</head>
+<body>
+<h1>Current Weather in San Francisco</h1>
+<div id="weather">Loading...</div>
+<script>
+async function fetchWeather() {
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.7749&longitude=-122.4194&current_weather=true';
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    const temp = data.current_weather.temperature;
+    const wind = data.current_weather.windspeed;
+    document.getElementById('weather').textContent =
+      `Temperature: ${temp}°C | Wind Speed: ${wind} km/h`;
+  } catch (err) {
+    document.getElementById('weather').textContent = 'Error fetching weather.';
+    console.error(err);
+  }
+}
+fetchWeather();
+</script>
+</body>
+</html>
