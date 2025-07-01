@@ -5,51 +5,60 @@
 <title>San Francisco Solar Radiation</title>
 <style>
  body { font-family: Arial, sans-serif; margin: 2em; }
- table { border-collapse: collapse; width: 100%; margin-top: 1em; }
  th, td { border: 1px solid #ccc; padding: 0.5em; text-align: left; }
  th { background: #f0f0f0; }
+ #dot-matrix {
+   display: grid;
+   grid-template-columns: repeat(24, 10px);
+   grid-auto-rows: 10px;
+   gap: 2px;
+   margin-top: 2em;
+ }
+ .dot {
+   width: 10px;
+   height: 10px;
+   border-radius: 50%;
+   background: yellow;
+ }
 </style>
 </head>
 <body>
-<h1>Direct Solar Radiation in San Francisco (Today)</h1>
-<table id="radiation-table">
-  <thead>
-    <tr>
-      <th>Time</th>
-      <th>Direct Radiation (W/m²)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td colspan="2">Loading...</td></tr>
-  </tbody>
-</table>
+<h1>Direct Solar Radiation in San Francisco (Past 92 Days)</h1>
+<div id="stats">Loading...</div>
+<div id="dot-matrix"></div>
 <script>
 async function fetchRadiation() {
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.7463&longitude=-122.5055&hourly=direct_radiation_instant&forecast_days=1';
+  const url =
+    'https://api.open-meteo.com/v1/forecast?latitude=37.7463&longitude=-122.5055&hourly=direct_radiation_instant&past_days=92&forecast_days=1&timezone=UTC';
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error('Network response was not ok');
     const data = await response.json();
-    const times = data.hourly.time;
     const radiation = data.hourly.direct_radiation_instant;
-    const tbody = document.querySelector('#radiation-table tbody');
-    tbody.innerHTML = '';
-    for (let i = 0; i < times.length; i++) {
-      const row = document.createElement('tr');
-      const timeCell = document.createElement('td');
-      const radCell = document.createElement('td');
-      timeCell.textContent = times[i];
-      radCell.textContent = radiation[i];
-      row.appendChild(timeCell);
-      row.appendChild(radCell);
-      tbody.appendChild(row);
-    }
+    const maxRad = Math.max(...radiation);
+    const minRad = Math.min(...radiation);
+    document.getElementById('stats').textContent =
+      `Max: ${maxRad} W/m² | Min: ${minRad} W/m²`;
+    renderDots(radiation, minRad, maxRad);
   } catch (err) {
-    const tbody = document.querySelector('#radiation-table tbody');
-    tbody.innerHTML = '<tr><td colspan="2">Error fetching data.</td></tr>';
+    document.getElementById('stats').textContent = 'Error fetching data.';
     console.error(err);
   }
 }
+
+function renderDots(radiation, minRad, maxRad) {
+  const container = document.getElementById('dot-matrix');
+  container.innerHTML = '';
+  const range = maxRad - minRad || 1;
+  for (const val of radiation) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    const opacity = (val - minRad) / range;
+    dot.style.opacity = opacity;
+    container.appendChild(dot);
+  }
+}
+
 fetchRadiation();
 </script>
 </body>
