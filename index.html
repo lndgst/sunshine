@@ -23,13 +23,13 @@
 </style>
 </head>
 <body>
-<h1>Direct Solar Radiation in San Francisco (2025)</h1>
+<h1>Direct Solar Radiation in San Francisco (Past 92 Days)</h1>
 <div id="stats">Loading...</div>
 <div id="dot-matrix"></div>
 <script>
 async function fetchRadiation() {
   const url =
-    'https://api.open-meteo.com/v1/forecast?latitude=37.7463&longitude=-122.5055&hourly=direct_radiation_instant&start_date=2025-01-01&end_date=2025-12-31&timezone=UTC';
+    'https://api.open-meteo.com/v1/forecast?latitude=37.7463&longitude=-122.5055&hourly=direct_radiation_instant&past_days=92&forecast_days=1&timezone=UTC';
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error('Network response was not ok');

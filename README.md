@@ -2,4 +2,4 @@
 
 This repo contains a simple webpage that visualizes hourly direct solar radiation in San Francisco using the [Open-Meteo](https://open-meteo.com/) API.
 
-Open `index.html` in your browser to see a dot matrix of the radiation forecast for all of 2025. Each row corresponds to a day and each column to an hour of the day. The dots fade from transparent to opaque based on the radiation level.
+Open `index.html` in your browser to see a dot matrix of the hourly direct radiation for the last 92 days plus tomorrow. Each row represents a day and each column an hour. The dots fade from transparent to opaque based on the radiation level.
