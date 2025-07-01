@@ -2,32 +2,55 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>San Francisco Weather</title>
+<title>San Francisco Solar Radiation</title>
 <style>
  body { font-family: Arial, sans-serif; margin: 2em; }
- #weather { font-size: 1.5em; }
+ table { border-collapse: collapse; width: 100%; margin-top: 1em; }
+ th, td { border: 1px solid #ccc; padding: 0.5em; text-align: left; }
+ th { background: #f0f0f0; }
 </style>
 </head>
 <body>
-<h1>Current Weather in San Francisco</h1>
-<div id="weather">Loading...</div>
+<h1>Direct Solar Radiation in San Francisco (Past 92 Days and Forecast)</h1>
+<table id="radiation-table">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th>Direct Radiation (W/m²)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td colspan="2">Loading...</td></tr>
+  </tbody>
+</table>
 <script>
-async function fetchWeather() {
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.7749&longitude=-122.4194&current_weather=true';
+async function fetchRadiation() {
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.7463&longitude=-122.5055&hourly=direct_radiation_instant&past_days=92&forecast_days=1';
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error('Network response was not ok');
     const data = await response.json();
-    const temp = data.current_weather.temperature;
-    const wind = data.current_weather.windspeed;
-    document.getElementById('weather').textContent =
-      `Temperature: ${temp}°C | Wind Speed: ${wind} km/h`;
+    const times = data.hourly.time;
+    const radiation = data.hourly.direct_radiation_instant;
+    const tbody = document.querySelector('#radiation-table tbody');
+    tbody.innerHTML = '';
+    for (let i = 0; i < times.length; i++) {
+      const row = document.createElement('tr');
+      const timeCell = document.createElement('td');
+      const radCell = document.createElement('td');
+      timeCell.textContent = times[i];
+      radCell.textContent = radiation[i];
+      row.appendChild(timeCell);
+      row.appendChild(radCell);
+      tbody.appendChild(row);
+    }
   } catch (err) {
-    document.getElementById('weather').textContent = 'Error fetching weather.';
+    const tbody = document.querySelector('#radiation-table tbody');
+    tbody.innerHTML = '<tr><td colspan="2">Error fetching data.</td></tr>';
     console.error(err);
   }
 }
-fetchWeather();
+fetchRadiation();
 </script>
 </body>
 </html>
